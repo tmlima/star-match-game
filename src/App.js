@@ -5,8 +5,11 @@ import './App.css';
 // STAR MATCH - Starting Template
 
 const NumPadKey = props => (
-
-  <button className="number" onClick={() => console.log(props.number)}>{props.number}</button>
+  <button 
+    className="number" 
+    style={{backgroundColor: colors[props.status]}}
+    onClick={() => console.log(props.number)}>{props.number}
+  </button>
 )
 
 const StarsPanel = props => (
@@ -21,6 +24,22 @@ const StarMatch = () => {
 
   const [stars, setStars] = React.useState(utils.random(1,9));
 
+  const numbers = utils.range(1, 9);
+  const [availableNumbers, setAvailableNumbers] = React.useState(numbers);
+  const [wrongNumbers, setWrongNumbers] = React.useState([]);
+  const [candidateNumbers, setCandidateNumbers] = React.useState([]);
+  
+  const numberStatus = (number) => {
+    if (availableNumbers.includes(number))
+      return 'available';
+    else if (wrongNumbers.includes(number))
+      return 'wrong';
+    else if (candidateNumbers.includes(number))
+      return 'candidate';
+    else
+      return 'used';
+  }
+
   return (
     <div className="game">
       <div className="help">
@@ -31,11 +50,13 @@ const StarMatch = () => {
           <StarsPanel stars={stars} />
         </div>
         <div className="right">
-
-          {utils.range(1, 9).map(number => 
-            <NumPadKey key={number} number={number} />
+          { numbers.map(number => 
+            <NumPadKey 
+              key={number} 
+              number={number}
+              status={numberStatus(number)}
+            />
           )}
-
         </div>
       </div>
       <div className="timer">Time Remaining: 10</div>
