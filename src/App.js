@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-// STAR MATCH - Starting Template
-
 const NumPadKey = props => (
   <button 
     className="number" 
     style={{backgroundColor: colors[props.status]}}
-    onClick={() => console.log(props.number)}>{props.number}
+    onClick={() => props.onClick(props.number)}>
+    {props.number}
   </button>
 )
 
@@ -40,6 +39,22 @@ const StarMatch = () => {
       return 'used';
   }
 
+  const onNumberClick = (number) => {
+    if (availableNumbers.includes(number)) {
+      const sum = utils.sum(candidateNumbers.concat(number));
+      if (sum === stars) {
+        console.log(number);
+      } else if (sum > stars) {
+        setWrongNumbers(candidateNumbers.concat(number));
+        setCandidateNumbers([]);
+      } else {
+        setCandidateNumbers(candidateNumbers.concat(number));
+      }
+
+      setAvailableNumbers(availableNumbers.filter(n => n !== number));
+    }
+  }
+
   return (
     <div className="game">
       <div className="help">
@@ -55,6 +70,7 @@ const StarMatch = () => {
               key={number} 
               number={number}
               status={numberStatus(number)}
+              onClick={onNumberClick}
             />
           )}
         </div>
