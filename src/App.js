@@ -13,9 +13,9 @@ const NumPadKey = props => (
 
 const StarsPanel = props => (
   <React.Fragment>
-    {utils.range(1, props.stars).map(startId => 
+    {utils.range(1, props.stars).map(startId => (
       <div key={startId} className="star"/>
-    )}
+    ))}
   </React.Fragment>
 )
 
@@ -42,16 +42,20 @@ const StarMatch = () => {
   const onNumberClick = (number) => {
     if (availableNumbers.includes(number)) {
       const sum = utils.sum(candidateNumbers.concat(number));
+      const newAvailableNumbers = availableNumbers.filter(n => n !== number);
+      setAvailableNumbers(newAvailableNumbers);
       if (sum === stars) {
-        console.log(number);
-      } else if (sum > stars) {
-        setWrongNumbers(candidateNumbers.concat(number));
         setCandidateNumbers([]);
+        setStars(utils.randomSumIn(newAvailableNumbers, 9));
+        console.log(number);
       } else {
-        setCandidateNumbers(candidateNumbers.concat(number));
-      }
-
-      setAvailableNumbers(availableNumbers.filter(n => n !== number));
+        if (sum > stars) {
+          setWrongNumbers(candidateNumbers.concat(number));
+          setCandidateNumbers([]);
+        } else {
+          setCandidateNumbers(candidateNumbers.concat(number));
+        }
+      } 
     }
   }
 
