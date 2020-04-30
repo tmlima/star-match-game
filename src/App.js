@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -21,6 +21,9 @@ const StarsPanel = props => (
 
 const PlayAgain = props => (
   <div className="game-done">
+    <div className="message" style={{ color: props.gameStatus === 'lost' ? 'red' : 'green'}}>
+      {props.gameStatus === 'lost' ? 'Game Over' : 'Nice'}
+    </div>
     <button onClick={props.onClick}>Play Again</button>
   </div>
 )
@@ -33,14 +36,29 @@ const StarMatch = () => {
   const [availableNumbers, setAvailableNumbers] = React.useState(numbers);
   const [wrongNumbers, setWrongNumbers] = React.useState([]);
   const [candidateNumbers, setCandidateNumbers] = React.useState([]);
+  const [secondsLeft, setSecondsLeft] = React.useState(10);
+
+  useEffect(() => {
+    if (secondsLeft > 0 && availableNumbers.length > 0) {
+      const timerId = setTimeout(() => {
+        setSecondsLeft(secondsLeft - 1);
+      }, 1000);
+      return () => clearTimeout(timerId);
+    }
+  });
   
-  const gameIsDone = availableNumbers.length === 0;
+  const gameStatus = availableNumbers.length === 0 
+    ? 'won' 
+    : secondsLeft === 0 
+      ? 'lost' 
+      : 'active'
 
   const resetGame = () => {
     setStars(utils.random(1,9));
     setAvailableNumbers(numbers);
     setWrongNumbers([]);
     setCandidateNumbers([]);
+    setSecondsLeft(10);
   }
 
   const numberStatus = (number) => {
@@ -54,7 +72,12 @@ const StarMatch = () => {
       return 'used';
   }
 
-  const onNumberClick = (number) => {
+  const onNumberClick = (number, currentStatus) => {
+
+    if (gameStatus !== 'active' || currentStatus === 'used') {
+      return;
+    }
+
     if (availableNumbers.includes(number)) {
       const sum = utils.sum(candidateNumbers.concat(number));
       const newAvailableNumbers = availableNumbers.filter(n => n !== number);
@@ -81,8 +104,8 @@ const StarMatch = () => {
       </div>
       <div className="body">
         <div className="left">
-          { gameIsDone ? (
-            <PlayAgain onClick={resetGame}/>
+          { gameStatus !== 'active' ? (
+            <PlayAgain onClick={resetGame} gameStatus={gameStatus} />
           ) : (
             <StarsPanel stars={stars} />
           )}
@@ -98,7 +121,7 @@ const StarMatch = () => {
           )}
         </div>
       </div>
-      <div className="timer">Time Remaining: 10</div>
+      <div className="timer">Time Remaining: {secondsLeft}</div>
     </div>
   );
 };
