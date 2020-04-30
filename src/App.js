@@ -28,7 +28,7 @@ const PlayAgain = props => (
   </div>
 )
 
-const StarMatch = () => {
+const Game = (props) => {
 
   const [stars, setStars] = React.useState(utils.random(1,9));
 
@@ -52,14 +52,6 @@ const StarMatch = () => {
     : secondsLeft === 0 
       ? 'lost' 
       : 'active'
-
-  const resetGame = () => {
-    setStars(utils.random(1,9));
-    setAvailableNumbers(numbers);
-    setWrongNumbers([]);
-    setCandidateNumbers([]);
-    setSecondsLeft(10);
-  }
 
   const numberStatus = (number) => {
     if (availableNumbers.includes(number))
@@ -105,7 +97,7 @@ const StarMatch = () => {
       <div className="body">
         <div className="left">
           { gameStatus !== 'active' ? (
-            <PlayAgain onClick={resetGame} gameStatus={gameStatus} />
+            <PlayAgain onClick={props.startNewGame} gameStatus={gameStatus} />
           ) : (
             <StarsPanel stars={stars} />
           )}
@@ -125,6 +117,11 @@ const StarMatch = () => {
     </div>
   );
 };
+
+const StarMatch = () => {
+  const [gameId, setGameId] = React.useState(1);
+  return <Game key={gameId} startNewGame={() => setGameId(gameId + 1)}/>;
+}
 
 // Color Theme
 const colors = {
