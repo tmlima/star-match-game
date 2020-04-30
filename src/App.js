@@ -19,6 +19,12 @@ const StarsPanel = props => (
   </React.Fragment>
 )
 
+const PlayAgain = props => (
+  <div className="game-done">
+    <button onClick={props.onClick}>Play Again</button>
+  </div>
+)
+
 const StarMatch = () => {
 
   const [stars, setStars] = React.useState(utils.random(1,9));
@@ -28,6 +34,15 @@ const StarMatch = () => {
   const [wrongNumbers, setWrongNumbers] = React.useState([]);
   const [candidateNumbers, setCandidateNumbers] = React.useState([]);
   
+  const gameIsDone = availableNumbers.length === 0;
+
+  const resetGame = () => {
+    setStars(utils.random(1,9));
+    setAvailableNumbers(numbers);
+    setWrongNumbers([]);
+    setCandidateNumbers([]);
+  }
+
   const numberStatus = (number) => {
     if (availableNumbers.includes(number))
       return 'available';
@@ -66,7 +81,11 @@ const StarMatch = () => {
       </div>
       <div className="body">
         <div className="left">
-          <StarsPanel stars={stars} />
+          { gameIsDone ? (
+            <PlayAgain onClick={resetGame}/>
+          ) : (
+            <StarsPanel stars={stars} />
+          )}
         </div>
         <div className="right">
           { numbers.map(number => 
